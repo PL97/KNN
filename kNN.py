@@ -2,15 +2,21 @@ from numpy import *
 import operator
 import csv
 from itertools import islice  
+import matplotlib
+import matplotlib.pyplot as plt
 
-def loadDataFromCsv(filename):
+def loadDataFromCsv(filename, n):
 	csv_file = csv.reader(open(filename, 'r'))
 	data = []
 	labels = []
+	count = 0
 	for temp in islice(csv_file, 1, None): 
 		data.append(list(map(eval, temp[1:])))
 		labels.append(temp[0])
-	dataSet = array(data)
+		dataSet = array(data)
+		count = count+1
+		if count == n:
+			break
 	return dataSet, labels
 
 def createDataSet():
@@ -20,7 +26,8 @@ def createDataSet():
 
 def distanceCalculate(inx, iny):
     dimension = len(inx)
-    return (sum(((inx-iny)**2)))**(1/dimension)
+    temp = sum(((inx-iny)**2))
+    return (temp)**(1/dimension)
 
 def classify(x, dataSet, labels, k):
 	#calculation the distance
@@ -53,18 +60,26 @@ train = "train.csv"
 test = "test.csv"
 
 print('开始导入训练文件：')
-Train_dataSet, Train_labels = loadDataFromCsv(train)
+count1 = eval(input("输入读取大小："))
+Train_dataSet, Train_labels = loadDataFromCsv(train, count1)
 print("训练元组条数：%d", len(Train_labels))
 
 print('开始导入测试文件：')
-Test_dataSet, Test_labels = loadDataFromCsv(test)
+count2 = eval(input("输入读取大小："))
+Test_dataSet, Test_labels = loadDataFromCsv(test, count2)
 print("测试元组条数：%d", len(Test_labels))
 
 print("开始分类")
-newlabels = classify(Test_dataSet, Train_dataSet, Train_labels, len(Train_labels))
+k = eval(input("选择一个k值"))
+newlabels = classify(Test_dataSet, Train_dataSet, Train_labels, k)
 
 print('开始计算正确率')
 accuration = calculateAccurate(Test_labels, newlabels);
 
 
 print(accuration)
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.scatter(newlabels, range(len(newlabels)))
+ax.scatter(Test_labels, range(len(Test_labels)))
