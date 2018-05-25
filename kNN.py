@@ -1,6 +1,7 @@
 from numpy import *
 import operator
 import csv
+import random
 from itertools import islice  
 import matplotlib
 import matplotlib.pyplot as plt
@@ -25,15 +26,25 @@ def autoNorm(dataSet):
 	minVal = dataSet.min(0)
 	maxVal = dataSet.max(0)
 	ranges = maxVal - minVal
+	for i in range(ranges.shape[0]):
+		if ranges[i] == 0:
+			ranges[i] = 1
 	normMid = dataSet-tile(minVal, (dataSet.shape[0], 1))
-	normFinal = mormMid/tile(ranges, (dataSet.shape[0], 1))
+	normFinal = normMid/tile(ranges, (dataSet.shape[0], 1))
 	return normFinal
 
 #测试函数，制造输入集
-def createDataSet():
-	group = array([[1.0, 1.1], [1.0, 1.0], [0, 0], [0, 0.1]])
-	label = ['A', 'A', 'B', 'B']
-	return group, label
+def createDataSet(dataSet, labels, percentage):
+	totalSize = dataSet.shape[0]
+	trainSize = int(percentage*totalSize)
+	testSize = totalSize - trainSize + 1
+	random.sample(range(totalSize),totalSize);
+	print(trainSize)
+	Train_dataSet = dataSet[0:trainSize]
+	Train_labels = labels[0:trainSize]
+	Test_dataSet = dataSet[trainSize+1:trainSize+testSize]
+	Test_labels = labels[trainSize+1:trainSize+testSize]
+	return Train_dataSet, Train_labels, Test_dataSet, Test_labels
 
 #计算距离
 def distanceCalculate(inx, iny):
@@ -70,17 +81,15 @@ def calculateAccurate(label1, label2):
 
 
 
-train = "train.csv"
-test = "test.csv"
-
-print('开始导入训练文件：')
+data = "train.csv"
+print('开始导入数据：')
 count1 = eval(input("输入读取大小："))
-Train_dataSet, Train_labels = loadDataFromCsv(train, count1)
+dataSet, labels = loadDataFromCsv(data, count1)
+dataSet = autoNorm(dataSet)
+print("元组条数：%d", len(labels))
+percentage = eval(input("输入训练数据比例大小："))
+Train_dataSet, Train_labels, Test_dataSet, Test_labels = createDataSet(dataSet, labels, percentage)
 print("训练元组条数：%d", len(Train_labels))
-
-print('开始导入测试文件：')
-count2 = eval(input("输入读取大小："))
-Test_dataSet, Test_labels = loadDataFromCsv(test, count2)
 print("测试元组条数：%d", len(Test_labels))
 
 print("开始分类")
