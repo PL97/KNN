@@ -80,6 +80,11 @@ accuration = calculateAccurate(Test_labels, newlabels);
 print(accuration)
 
 fig = plt.figure()
+plt.title('red means pewdiction is wrong')
+plt.xlabel('tuples')
+plt.ylabel('Guess label')
 ax = fig.add_subplot(111)
-ax.scatter(newlabels, range(len(newlabels)))
-ax.scatter(Test_labels, range(len(Test_labels)))
+ax.scatter(range(len(newlabels)), newlabels, c = 'r')
+ax.scatter(range(len(Test_labels)), Test_labels, c = 'b')
+plt.grid(True)
+plt.show()
