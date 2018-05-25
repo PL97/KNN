@@ -5,6 +5,7 @@ from itertools import islice
 import matplotlib
 import matplotlib.pyplot as plt
 
+#从csv文件中导入数据
 def loadDataFromCsv(filename, n):
 	csv_file = csv.reader(open(filename, 'r'))
 	data = []
@@ -19,16 +20,28 @@ def loadDataFromCsv(filename, n):
 			break
 	return dataSet, labels
 
+#将属性归一化
+def autoNorm(dataSet):
+	minVal = dataSet.min(0)
+	maxVal = dataSet.max(0)
+	ranges = maxVal - minVal
+	normMid = dataSet-tile(minVal, (dataSet.shape[0], 1))
+	normFinal = mormMid/tile(ranges, (dataSet.shape[0], 1))
+	return normFinal
+
+#测试函数，制造输入集
 def createDataSet():
 	group = array([[1.0, 1.1], [1.0, 1.0], [0, 0], [0, 0.1]])
 	label = ['A', 'A', 'B', 'B']
 	return group, label
 
+#计算距离
 def distanceCalculate(inx, iny):
     dimension = len(inx)
     temp = sum(((inx-iny)**2))
     return (temp)**(1/dimension)
 
+#knn分类
 def classify(x, dataSet, labels, k):
 	#calculation the distance
 	#diffMat = (tile(inx, (dataSet.shape[0], 1))-dataSet)**2
@@ -47,6 +60,7 @@ def classify(x, dataSet, labels, k):
 		newLabel.append(sortted[0][0])
 	return newLabel
 
+#计算准确率
 def calculateAccurate(label1, label2):
 	count = 0
 	for i in range(len(label1)):
